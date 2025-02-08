@@ -6,9 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use App\Jobs\VerificarPagamentosJob;
 
 class PaymentController extends Controller
 {
+    public function verificarPagamentos()
+    {
+        (new VerificarPagamentosJob())->handle(); // Executa o Job imediatamente
+        return response()->json(['message' => 'Job executado com sucesso']);
+    }
+
     public function criarPagamentoPix(Request $request)
     {
         // Validação dos dados de entrada

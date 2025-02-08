@@ -10,12 +10,13 @@ use App\Http\Controllers\employees\BarbersController;
 use App\Http\Controllers\Payment\PaymentController;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\User;
+use App\Models\gestorBarbearia\Barbearia;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-//Rota de Login
+//Rota de Login cliente
 
 Route::post('/login', function (Request $request) {
     // Validação dos dados de entrada
@@ -48,6 +49,37 @@ Route::post('/login', function (Request $request) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+//Rota de Login barbearia
+
+Route::post('/loginBarbearia', function (Request $request) {
+    // Validação dos dados de entrada
+    $request->validate([
+        'email' => 'required|email',
+        'senha' => 'required',
+    ]);
+
+    // Busca o usuário pelo email
+    $barbearia = Barbearia::where('email', $request->email)->first();
+
+    // Verifica se o usuário existe e se a senha está correta
+    if (!$barbearia || !password_verify($request->senha, $barbearia->senha)) {
+        return response()->json(['error' => 'Credenciais inválidas'], 401);
+    }
+
+    // Gera o token JWT
+    $token = JWTAuth::fromUser($barbearia);
+
+    // Autenticação bem-sucedida
+    return response()->json([
+        'message' => 'Login realizado com sucesso!',
+        'token' => $token,
+        'cliente_id' => $barbearia->id,
+        'status' => $barbearia->status,
+    ]);
+});
+
+//----------------------------------------------------------------------------------------------------------------------
+
 //Clientes
 Route::get('/clientes', [CustomerController::class, 'getCustomers']);
 Route::get('/agendamento', [CustomerController::class, 'getSchedule']);
@@ -66,4 +98,5 @@ Route::get('/barbeiro', [BarbersController::class, 'getBarbers']);
 
 //Rota de pagamento
 Route::post('/pagamento/pix', [PaymentController::class, 'criarPagamentoPix']);
+Route::get('/pagamento/verificarPagamentos', [PaymentController::class, 'verificarPagamentos']);
 

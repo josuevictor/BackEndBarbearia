@@ -18,18 +18,20 @@ class VerificarPagamentosJob implements ShouldQueue
 
     public function handle()
     {
+
         $barbearias = Barbearia::where('status', 'ativo')->get();
 
         foreach ($barbearias as $barbearia) {
             if ($barbearia->data_vencimento) {
-                $dias_atraso = now()->diffInDays($barbearia->data_vencimento, false);
+                //$dias_atraso = now()->diffInDays($barbearia->data_vencimento, false);
+                $dataVencimento = \Carbon\Carbon::parse($barbearia->data_vencimento);
+                $dias_atraso = $dataVencimento->diffInDays(now(), false);
+
 
                 if ($dias_atraso >= 3) {
-                    // Bloqueia a barbearia caso tenha mais de 3 dias de atraso
-                    $barbearia->status = 'bloqueado';
-                    $barbearia->save();
+                    $barbearia->update(['status' => 'bloqueado']);
+                    \Log::info("Barbearia {$barbearia->id} bloqueada! Dias de atraso: $dias_atraso");
                 } else {
-                    // Verifica no Mercado Pago se há pagamento via PIX
                     $this->verificarPagamentoViaPix($barbearia);
                 }
             }
@@ -71,6 +73,8 @@ class VerificarPagamentosJob implements ShouldQueue
             ]);
         }
     }
+
+
 
     private function atualizarBarbearia($barbearia)
     {
