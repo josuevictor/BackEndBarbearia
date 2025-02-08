@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\scheduling\scheduleServiceController;
 use App\Http\Controllers\employees\BarbersController;
+use App\Http\Controllers\Payment\PaymentController;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\User;
 
@@ -33,9 +34,6 @@ Route::post('/login', function (Request $request) {
     if (!$user || !password_verify($request->senha, $user->senha)) {
         return response()->json(['error' => 'Credenciais inválidas'], 401);
     }
-
-
-
 
     // Gera o token JWT
     $token = JWTAuth::fromUser($user);
@@ -65,4 +63,7 @@ Route::patch('/cancelarAgendamento', [scheduleServiceController::class, 'removeA
 
 //Profissionais
 Route::get('/barbeiro', [BarbersController::class, 'getBarbers']);
+
+//Rota de pagamento
+Route::post('/pagamento/pix', [PaymentController::class, 'criarPagamentoPix']);
 
