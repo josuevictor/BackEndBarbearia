@@ -14,6 +14,9 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd pdo_mysql zip mbstring exif pcntl
 
+# Habilitar módulos do Apache necessários
+RUN a2enmod rewrite headers
+
 # Instalar o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -23,16 +26,24 @@ COPY . /var/www/html
 # Definir o diretório de trabalho
 WORKDIR /var/www/html
 
+# Configurar permissões para o Apache
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
+
 # Instalar dependências do Laravel
 RUN composer install --optimize-autoloader --no-dev
-
-# Configurar permissões
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Gerar caches do Laravel
 RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
+
+# Configurar o Apache para permitir o .htaccess
+RUN echo "<Directory /var/www/html/public>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>" > /etc/apache2/sites-available/000-default.conf
 
 # Expor a porta 80
 EXPOSE 80
