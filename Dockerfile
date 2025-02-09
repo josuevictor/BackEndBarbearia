@@ -24,11 +24,18 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . /var/www/html
 
 # Definir o diretório de trabalho
-WORKDIR /var/www/html
+WORKDIR /var/www/html/public
 
 # Configurar permissões para o Apache
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Configurar o Apache para permitir o .htaccess
+RUN echo "<Directory /var/www/html/public>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>" > /etc/apache2/sites-available/000-default.conf
 
 # Instalar dependências do Laravel
 RUN composer install --optimize-autoloader --no-dev
@@ -37,13 +44,6 @@ RUN composer install --optimize-autoloader --no-dev
 RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
-
-# Configurar o Apache para permitir o .htaccess
-RUN echo "<Directory /var/www/html/public>\n\
-    Options Indexes FollowSymLinks\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>" > /etc/apache2/sites-available/000-default.conf
 
 # Expor a porta 80
 EXPOSE 80
