@@ -46,7 +46,7 @@ RUN php artisan config:cache && \
     php artisan view:cache
 
 # Expor a porta 80
-EXPOSE 80
+EXPOSE 10000
 
 # Comando para iniciar o servidor Apache
 CMD ["apache2-foreground"]
