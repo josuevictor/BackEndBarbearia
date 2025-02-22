@@ -23,8 +23,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Copiar o código do projeto para o container
 COPY . /var/www/html
 
-# Definir o diretório de trabalho
-WORKDIR /var/www/html/public
+# Criar diretórios de cache e storage
+RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Configurar permissões para o Apache
 RUN chown -R www-data:www-data /var/www/html
@@ -37,6 +37,9 @@ RUN echo "<Directory /var/www/html/public>\n\
     Require all granted\n\
 </Directory>" > /etc/apache2/sites-available/000-default.conf
 
+# Definir o diretório de trabalho
+WORKDIR /var/www/html
+
 # Instalar dependências do Laravel
 RUN composer install --optimize-autoloader --no-dev
 
@@ -46,7 +49,7 @@ RUN php artisan config:cache && \
     php artisan view:cache
 
 # Expor a porta 80
-EXPOSE 10000
+EXPOSE 80
 
 # Comando para iniciar o servidor Apache
-CMD ["apache2-foreground"]
+CMD ["sh", "-c", "sed -i 's/80/$PORT/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf && apache2-foreground"]
