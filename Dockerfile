@@ -27,15 +27,22 @@ WORKDIR /var/www/html
 RUN composer install --optimize-autoloader --no-dev
 
 # Configurar permissões
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Configurar o Apache para usar o diretório public/ como raiz
+RUN sed -i 's#/var/www/html#/var/www/html/public#g' /etc/apache2/sites-available/000-default.conf
+RUN sed -i 's#/var/www/html#/var/www/html/public#g' /etc/apache2/apache2.conf
+RUN a2enmod rewrite
+
+# Configurar o Apache para escutar na porta do Render
+RUN echo "Listen $PORT" > /etc/apache2/ports.conf
+RUN sed -i 's/80/$PORT/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/apache2.conf
 
 # Gerar caches do Laravel
 RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
 
-# Expor a porta 80
-EXPOSE 80
-
 # Comando para iniciar o servidor Apache
-CMD ["apache2-foreground"]
+CMD ["sh", "-c", "sed -i 's/80/$PORT/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/apache2.conf && apache2-foreground"]
