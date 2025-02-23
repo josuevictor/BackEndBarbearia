@@ -18,10 +18,10 @@ RUN apt-get update && apt-get install -y \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Copiar o código do projeto para o container
-COPY . /var/www/html/public
+COPY . /var/www/html
 
 # Definir o diretório de trabalho
-WORKDIR /var/www/html/public
+WORKDIR /var/www/html
 
 
 # Instalar dependências do Laravel
