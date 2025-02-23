@@ -23,12 +23,23 @@ COPY . /var/www/html
 # Definir o diretório de trabalho
 WORKDIR /var/www/html
 
+# Configurar o Apache para servir a pasta public do Laravel
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Habilita o módulo rewrite do Apache
+RUN a2enmod rewrite
+
+# Configurar o ServerName para evitar avisos
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Instalar dependências do Laravel
 RUN composer install --optimize-autoloader --no-dev
 
 # Configurar permissões
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Gerar caches do Laravel
 RUN php artisan config:cache && \
