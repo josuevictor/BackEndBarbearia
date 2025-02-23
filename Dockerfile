@@ -51,3 +51,5 @@ EXPOSE 80
 
 # Comando para iniciar o servidor Apache
 CMD ["apache2-foreground"]
+
+
