@@ -54,7 +54,7 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),
-            'host' => env('DB_HOST', 'dpg-cutn4v8gph6c73b4j1tg-a'),
+            'host' => env('DB_HOST', 'dpg-cutn4v8gph6c73b4j1tg-a.oregon-postgres.render.com'),
             'port' => env('DB_PORT', '5432'),
             'database' => env('DB_DATABASE', 'agendamento_38eg'),
             'username' => env('DB_USERNAME', 'agendamento_38eg_user'),
