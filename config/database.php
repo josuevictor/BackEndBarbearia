@@ -56,7 +56,7 @@ return [
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', 'dpg-cutn4v8gph6c73b4j1tg-a'),
             'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'postgresql://agendamento_38eg_user:KViCWCJDWdu1jwpwCHrF71OUDPKYDKcg@dpg-cutn4v8gph6c73b4j1tg-a/agendamento_38eg'),
+            'database' => env('DB_DATABASE', 'postgresql://agendamento_38eg_user:KViCWCJDWdu1jwpwCHrF71OUDPKYDKcg@dpg-cutn4v8gph6c73b4j1tg-a.oregon-postgres.render.com/agendamento_38eg'),
             'username' => env('DB_USERNAME', 'agendamento_38eg_user'),
             'password' => env('DB_PASSWORD', 'KViCWCJDWdu1jwpwCHrF71OUDPKYDKcg'),
             'charset' => env('DB_CHARSET', 'utf8'),
