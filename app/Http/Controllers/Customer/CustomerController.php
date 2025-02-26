@@ -75,6 +75,7 @@ class CustomerController extends Controller
             return response()->json([
                 'status' => 500,
                 'error_code' =>  $e->getCode(),
+                'msg_banco' => $e->getMessage(),
                 'success' => false,
                 'msg' => 'Houve um erro na requisicao!',
                 'object' => 'null',
