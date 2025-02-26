@@ -46,6 +46,8 @@ RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
 
+RUN apt-get update && apt-get install -y php-pgsql
+
 # Expor a porta 80
 EXPOSE 80
 
