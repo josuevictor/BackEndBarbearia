@@ -40,6 +40,9 @@ RUN composer install --optimize-autoloader --no-dev
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Rodar a configuração do JWT
+RUN php artisan jwt:secret
+
 # Gerar caches do Laravel
 RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
 
