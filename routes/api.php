@@ -19,32 +19,37 @@ Route::get('/user', function (Request $request) {
 //Rota de Login cliente
 
 Route::post('/login', function (Request $request) {
-    // Validação dos dados de entrada
-    $request->validate([
-        'email' => 'required|email',
-        'senha' => 'required',
-    ]);
+
+    try {
+
+        // Validação dos dados de entrada
+        $request->validate([
+            'email' => 'required|email',
+            'senha' => 'required',
+        ]);
 
 
+        // Busca o usuário pelo email
+        $user = User::where('email', $request->email)->first();
 
-    // Busca o usuário pelo email
-    $user = User::where('email', $request->email)->first();
 
+        // Verifica se o usuário existe e se a senha está correta
+        if (!$user || !password_verify($request->senha, $user->senha)) {
+            return response()->json(['error' => 'Credenciais inválidas'], 401);
+        }
 
-    // Verifica se o usuário existe e se a senha está correta
-    if (!$user || !password_verify($request->senha, $user->senha)) {
-        return response()->json(['error' => 'Credenciais inválidas'], 401);
+        // Gera o token JWT
+        $token = JWTAuth::fromUser($user);
+
+        // Autenticação bem-sucedida
+        return response()->json([
+            'message' => 'Login realizado com sucesso!',
+            'token' => $token,
+            'cliente_id' => $user->cliente_id,
+        ]);
+    }catch (\Exception $e){
+        return response()->json([$e->getMessage()]);
     }
-
-    // Gera o token JWT
-    $token = JWTAuth::fromUser($user);
-
-    // Autenticação bem-sucedida
-    return response()->json([
-        'message' => 'Login realizado com sucesso!',
-        'token' => $token,
-        'cliente_id' => $user->cliente_id,
-    ]);
 });
 
 //----------------------------------------------------------------------------------------------------------------------
