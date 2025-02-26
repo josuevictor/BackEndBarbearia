@@ -51,7 +51,7 @@ return [
 //            ]) : [],
 //        ],
 
-        'psql' => [
+        'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', 'dpg-cutn4v8gph6c73b4j1tg-a.oregon-postgres.render.com'),
