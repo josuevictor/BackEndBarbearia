@@ -11,8 +11,10 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    php-pgsql \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd pdo_mysql zip mbstring exif pcntl
+    && docker-php-ext-install -j$(nproc) gd pdo_mysql zip mbstring exif pcntl \
+
 
 # Instalar o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -46,7 +48,6 @@ RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
 
-RUN apt-get update && apt-get install -y php-pgsql
 
 # Expor a porta 80
 EXPOSE 80
