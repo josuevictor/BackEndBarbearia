@@ -59,7 +59,7 @@ return [
             'port' => env('DB_PORT', '5432'),
             'database' => env('DB_DATABASE', 'agendamento_38eg'),
             'username' => env('DB_USERNAME', 'agendamento_38eg_user'),
-            'password' => env('DB_PASSWORD', 'KViCWCJDWdu1jwpwCHrF71OUDPKYDKcg'),
+            'password' => env('DB_PASSWORD', 'KViCWCJDWdu1jwpwCHrF71OUDPKYDKcgg'),
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
