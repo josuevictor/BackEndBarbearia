@@ -10,7 +10,7 @@ class Barbearia extends Model implements JWTSubject // Implemente a interface
 {
     use HasFactory;
 
-    protected $table = 'barbearias';
+    protected $table = 'agendamento.barbearias';
     protected $primaryKey = 'id';
 
     protected $fillable = ['nome', 'status', 'data_vencimento', 'email', 'senha'];
