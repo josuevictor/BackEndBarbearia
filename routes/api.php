@@ -57,30 +57,36 @@ Route::post('/login', function (Request $request) {
 //Rota de Login barbearia
 
 Route::post('/loginBarbearia', function (Request $request) {
-    // Validação dos dados de entrada
-    $request->validate([
-        'email' => 'required|email',
-        'senha' => 'required',
-    ]);
 
-    // Busca o usuário pelo email
-    $barbearia = Barbearia::where('email', $request->email)->first();
+    try {
 
-    // Verifica se o usuário existe e se a senha está correta
-    if (!$barbearia || !password_verify($request->senha, $barbearia->senha)) {
-        return response()->json(['error' => 'Credenciais inválidas'], 401);
+        // Validação dos dados de entrada
+        $request->validate([
+            'email' => 'required|email',
+            'senha' => 'required',
+        ]);
+
+        // Busca o usuário pelo email
+        $barbearia = Barbearia::where('email', $request->email)->first();
+
+        // Verifica se o usuário existe e se a senha está correta
+        if (!$barbearia || !password_verify($request->senha, $barbearia->senha)) {
+            return response()->json(['error' => 'Credenciais inválidas'], 401);
+        }
+
+        // Gera o token JWT
+        $token = JWTAuth::fromUser($barbearia);
+
+        // Autenticação bem-sucedida
+        return response()->json([
+            'message' => 'Login realizado com sucesso!',
+            'token' => $token,
+            'cliente_id' => $barbearia->id,
+            'status' => $barbearia->status,
+        ]);
+    }catch (\Exception $e){
+        return response()->json([$e->getMessage()]);
     }
-
-    // Gera o token JWT
-    $token = JWTAuth::fromUser($barbearia);
-
-    // Autenticação bem-sucedida
-    return response()->json([
-        'message' => 'Login realizado com sucesso!',
-        'token' => $token,
-        'cliente_id' => $barbearia->id,
-        'status' => $barbearia->status,
-    ]);
 });
 
 //----------------------------------------------------------------------------------------------------------------------
