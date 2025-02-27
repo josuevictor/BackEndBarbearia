@@ -44,7 +44,7 @@ RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 RUN php artisan jwt:secret
 
 # Gerar caches do Laravel
-RUN php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan cache:clear && php artisan config:clear
+RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
 
 
 # Expor a porta 80
