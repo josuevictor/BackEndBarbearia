@@ -22,6 +22,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Copiar o código do projeto para o container
 COPY . /var/www/html
 
+# Copiar o arquivo .env para o container
+COPY .env /var/www/html/.env
+
 # Definir o diretório de trabalho
 WORKDIR /var/www/html
 
@@ -40,9 +43,8 @@ RUN composer install --optimize-autoloader --no-dev
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Gerar caches do Laravel
-RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
-
+# Limpar e gerar caches do Laravel
+RUN php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache
 
 # Expor a porta 80
 EXPOSE 80
