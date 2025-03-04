@@ -40,9 +40,14 @@ RUN composer install --optimize-autoloader --no-dev
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Limpar o cache do Laravel
+RUN php artisan config:clear && \
+    php artisan cache:clear && \
+    php artisan route:clear && \
+    php artisan view:clear
+
 # Gerar caches do Laravel
 RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
-
 
 # Expor a porta 80
 EXPOSE 80
