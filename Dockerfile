@@ -48,4 +48,4 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 EXPOSE 80
 
 # Usar o script de entrypoint
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
