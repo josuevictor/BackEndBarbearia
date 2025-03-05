@@ -36,6 +36,9 @@ RUN a2enmod rewrite && echo "ServerName localhost" >> /etc/apache2/apache2.conf
 # Instalar dependências do Laravel
 RUN composer install --optimize-autoloader --no-dev
 
+RUN composer require mercadopago/dx-php
+
+
 # Configurar permissões
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
