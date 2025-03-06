@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
+use App\Repositories\customers\customerRepository;
+use App\Repositories\scheduleRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Repositories\customerRepository;
-use App\Repositories\scheduleRepository;
 use Illuminate\Support\Facades\Hash;
 
 

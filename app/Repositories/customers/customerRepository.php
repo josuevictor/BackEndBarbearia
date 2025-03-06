@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\Repositories;
+namespace App\Repositories\customers;
 
 use Illuminate\Support\Facades\DB;
 
@@ -17,4 +17,6 @@ class CustomerRepository
                                       from agendamento.clientes c');
         return response()->json($result);
     }
+
+
 }
