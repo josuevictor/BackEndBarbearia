@@ -95,12 +95,14 @@ Route::post('/loginBarbearia', function (Request $request) {
 Route::get('/clientes', [CustomerController::class, 'getCustomers']);
 Route::get('/agendamento', [CustomerController::class, 'getSchedule']);
 Route::post('/CadastrarCliente', [CustomerController::class, 'store']);
+Route::patch('/cancelarAgendamento', [scheduleServiceController::class, 'removeAppointment']);
+Route::get('/agendamentosDaSemana', [CustomerController::class, 'getWeekAppointments']);
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
 //Agendamentos
 Route::post('/agendar', [scheduleServiceController::class, 'scheduleService']);
-Route::patch('/cancelarAgendamento', [scheduleServiceController::class, 'removeAppointment']);
 
 //----------------------------------------------------------------------------------------------------------------------
 
