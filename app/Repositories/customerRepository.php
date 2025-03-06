@@ -9,7 +9,12 @@ class CustomerRepository
 {
     public function getCustomers()
     {
-        $result = DB::select('select * from agendamento.clientes');
+        $result = DB::select('select c.nome,
+                                           c.sobrenome,
+                                           c.cpf,
+                                           c.email,
+                                           c.telefone
+                                      from agendamento.clientes c');
         return response()->json($result);
     }
 }
