@@ -17,7 +17,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 //Rota de Login cliente
-
 Route::post('/login', function (Request $request) {
 
     try {
@@ -55,7 +54,6 @@ Route::post('/login', function (Request $request) {
 //----------------------------------------------------------------------------------------------------------------------
 
 //Rota de Login barbearia
-
 Route::post('/loginBarbearia', function (Request $request) {
 
     try {
@@ -97,17 +95,16 @@ Route::get('/agendamento', [CustomerController::class, 'getSchedule']);
 Route::post('/CadastrarCliente', [CustomerController::class, 'store']);
 Route::patch('/cancelarAgendamento', [scheduleServiceController::class, 'removeAppointment']);
 Route::get('/agendamentosDaSemana', [CustomerController::class, 'getWeekAppointments']);
-
-
-//----------------------------------------------------------------------------------------------------------------------
-
-//Agendamentos
+Route::get('/agendamentosDoMes', [CustomerController::class, 'getMonthAppointments']);
 Route::post('/agendar', [scheduleServiceController::class, 'scheduleService']);
 
 //----------------------------------------------------------------------------------------------------------------------
 
 //Profissionais
 Route::get('/barbeiro', [BarbersController::class, 'getBarbers']);
+
+
+//----------------------------------------------------------------------------------------------------------------------
 
 //Rota de pagamento
 Route::post('/pagamento/pix', [PaymentController::class, 'criarPagamentoPix']);
