@@ -125,7 +125,6 @@ class scheduleServiceController extends Controller
     {
         $data = $request->query('data'); // Ex: "2025-04-17"
         $barbeiroId = $request->query('barbeiro_id'); // ID do barbeiro
-        $horarioEscolhido = $request->query('horario'); // Horário escolhido pelo usuário (Ex: "10:00")
 
         // Lista de horários disponíveis
         $horarios = [
@@ -148,13 +147,9 @@ class scheduleServiceController extends Controller
         // Filtrar horários disponíveis
         $disponiveis = array_diff($horarios, $agendados);
 
-        // Verificar se o horário escolhido está disponível
-        if (!in_array($horarioEscolhido, $disponiveis)) {
-            return response()->json(['message' => 'Este horário já está agendado.'], 400);
-        }
-
         return response()->json(array_values($disponiveis));
     }
+
 
 
 
