@@ -7,6 +7,7 @@ use App\Models\Agendamento\Agendamento;
 use http\Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use function PHPUnit\TestFixture\func;
 
 class scheduleServiceController extends Controller
@@ -119,6 +120,43 @@ class scheduleServiceController extends Controller
             return response()->json(['response' => 'Erro ao cancelar agendamento', 'error_code' => $e->getCode()], 500);
         }
     }
+
+    public function horariosDisponiveis(Request $request)
+    {
+        $data = $request->query('data'); // Ex: "2025-04-17"
+        $barbeiroId = $request->query('barbeiro_id'); // ID do barbeiro
+        $horarioEscolhido = $request->query('horario'); // Horário escolhido pelo usuário (Ex: "10:00")
+
+        // Lista de horários disponíveis
+        $horarios = [
+            '09:00', '09:30', '10:00', '10:30',
+            '11:00', '11:30', '12:00', '12:30',
+            '13:00', '13:30', '14:00', '14:30',
+            '15:00', '15:30', '16:00', '16:30',
+            '17:00', '17:30', '18:00', '18:30'
+        ];
+
+        // Buscar horários já agendados no banco
+        $agendados = Agendamento::where('agendamento_funcionario_id', $barbeiroId)
+            ->whereDate('data_hora', $data) // Filtra apenas pela data
+            ->pluck('data_hora')
+            ->map(function ($item) {
+                return Carbon::parse($item)->format('H:i'); // Extrai somente a hora
+            })
+            ->toArray();
+
+        // Filtrar horários disponíveis
+        $disponiveis = array_diff($horarios, $agendados);
+
+        // Verificar se o horário escolhido está disponível
+        if (!in_array($horarioEscolhido, $disponiveis)) {
+            return response()->json(['message' => 'Este horário já está agendado.'], 400);
+        }
+
+        return response()->json(array_values($disponiveis));
+    }
+
+
 
 }
 
