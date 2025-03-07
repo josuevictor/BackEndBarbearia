@@ -45,6 +45,7 @@ Route::post('/login', function (Request $request) {
             'message' => 'Login realizado com sucesso!',
             'token' => $token,
             'cliente_id' => $user->cliente_id,
+            'cpf' => $user->cpf,
         ]);
     }catch (\Exception $e){
         return response()->json([$e->getMessage()]);
