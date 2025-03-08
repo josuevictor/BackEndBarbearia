@@ -74,8 +74,6 @@ class VerificarPagamentosJob implements ShouldQueue
         }
     }
 
-
-
     private function atualizarBarbearia($barbearia)
     {
         // Atualiza a data de vencimento para o próximo mês após um pagamento via PIX

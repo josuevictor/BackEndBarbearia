@@ -110,6 +110,7 @@ Route::get('/barbeiro', [BarbersController::class, 'getBarbers']);
 //Rota de pagamento
 Route::post('/pagamento/pix', [PaymentController::class, 'criarPagamentoPix']);
 Route::get('/pagamento/verificarPagamentos', [PaymentController::class, 'verificarPagamentos']);
+Route::post('/pagamento/webhook', [PaymentController::class, 'webhook']);
 
 //rota de validação
 Route::get('/horariosDisponiveis', [scheduleServiceController::class, 'horariosDisponiveis']);

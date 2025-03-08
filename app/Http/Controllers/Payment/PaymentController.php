@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use App\Jobs\VerificarPagamentosJob;
 
+use App\Models\gestorBarbearia\Barbearia;
+use Illuminate\Validation\Rule;
+
 class PaymentController extends Controller
 {
     public function verificarPagamentos()
@@ -22,6 +25,10 @@ class PaymentController extends Controller
         $request->validate([
             'email' => 'required|email',
             'transaction_amount' => 'required|numeric|min:1',  // Valor do pagamento
+            'barbearia_id' => [
+                'required',
+                Rule::exists(Barbearia::class, 'id') // Validação usando o model
+            ],
         ]);
 
         // Configurações do pagamento
@@ -38,7 +45,8 @@ class PaymentController extends Controller
             "payment_method_id" => "pix", // Método de pagamento via PIX
             "payer" => [
                 "email" => $request->email
-            ]
+            ],
+            "external_reference" => $request->barbearia_id, // ID da barbearia
         ];
 
         // Faz a requisição para gerar o pagamento via PIX
@@ -85,5 +93,35 @@ class PaymentController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+
+    //WebHook
+    public function webhook(Request $request)
+    {
+        // Dados recebidos do Mercado Pago
+        $dados = $request->all();
+
+        \Log::info('Webhook recebido:', $dados);
+
+        // Verifica se o evento é de atualização de pagamento e se o status é "approved"
+        if (isset($dados['action']) && $dados['action'] === 'payment.updated' && isset($dados['data']['status']) && $dados['data']['status'] === 'approved') {
+            $externalReference = $dados['data']['external_reference']; // ID da barbearia
+            $barbearia = Barbearia::find($externalReference);
+
+            if ($barbearia) {
+                // Atualiza o status da barbearia
+                $barbearia->update([
+                    'status' => 'ativo',
+                    'data_vencimento' => now()->addMonth(),
+                ]);
+
+                \Log::info("Barbearia ID {$barbearia->id} atualizada para ATIVO via webhook.");
+            } else {
+                \Log::warning("Barbearia com ID {$externalReference} não encontrada.");
+            }
+        }
+
+        return response()->json(['message' => 'Webhook recebido com sucesso'], 200);
     }
 }
