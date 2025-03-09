@@ -95,8 +95,7 @@ class PaymentController extends Controller
         }
     }
 
-
-    //WebHook
+    // WebHook
     public function webhook(Request $request)
     {
         // Dados recebidos do Mercado Pago
@@ -104,21 +103,44 @@ class PaymentController extends Controller
 
         \Log::info('Webhook recebido:', $dados);
 
-        // Verifica se o evento é de atualização de pagamento e se o status é "approved"
-        if (isset($dados['action']) && $dados['action'] === 'payment.updated' && isset($dados['data']['status']) && $dados['data']['status'] === 'approved') {
-            $externalReference = $dados['data']['external_reference']; // ID da barbearia
-            $barbearia = Barbearia::find($externalReference);
+        // Verifica se o evento é de atualização de pagamento
+        if (isset($dados['action']) && $dados['action'] === 'payment.updated') {
+            // Obtém o ID do pagamento
+            $paymentId = $dados['data']['id'] ?? null;
 
-            if ($barbearia) {
-                // Atualiza o status da barbearia
-                $barbearia->update([
-                    'status' => 'ativo',
-                    'data_vencimento' => now()->addMonth(),
-                ]);
+            if ($paymentId) {
+                // Busca os detalhes do pagamento na API do Mercado Pago
+                $accessToken = env('MERCADO_PAGO_ACCESS_TOKEN');
+                $response = Http::withToken($accessToken)
+                    ->get("https://api.mercadopago.com/v1/payments/{$paymentId}");
 
-                \Log::info("Barbearia ID {$barbearia->id} atualizada para ATIVO via webhook.");
-            } else {
-                \Log::warning("Barbearia com ID {$externalReference} não encontrada.");
+                if ($response->successful()) {
+                    $paymentData = $response->json();
+
+                    // Verifica se o pagamento foi aprovado e se tem external_reference
+                    if ($paymentData['status'] === 'approved' && isset($paymentData['external_reference'])) {
+                        $externalReference = $paymentData['external_reference']; // ID da barbearia
+                        $barbearia = Barbearia::find($externalReference);
+
+                        if ($barbearia) {
+                            // Atualiza o status da barbearia
+                            $barbearia->update([
+                                'status' => 'ativo',
+                                'data_vencimento' => now()->addMonth(),
+                            ]);
+
+                            \Log::info("Barbearia ID {$barbearia->id} atualizada para ATIVO via webhook.");
+                        } else {
+                            \Log::warning("Barbearia com ID {$externalReference} não encontrada.");
+                        }
+                    } else {
+                        \Log::warning('Pagamento não aprovado ou external_reference não encontrado:', $paymentData);
+                    }
+                } else {
+                    \Log::error('Erro ao buscar detalhes do pagamento no Mercado Pago', [
+                        'response' => $response->json()
+                    ]);
+                }
             }
         }
 
