@@ -83,6 +83,7 @@ class PaymentController extends Controller
             }
 
             return response()->json([
+                'payment_id' => $paymentData['id'], // ID do pagamento para consultar o status
                 'qr_code' => $qr_code,
                 'qr_code_base64' => $qr_code_base64,
                 'ticket_url' => $ticket_url
@@ -145,5 +146,47 @@ class PaymentController extends Controller
         }
 
         return response()->json(['message' => 'Webhook recebido com sucesso'], 200);
+    }
+
+
+    /**
+     * Verifica o status de um pagamento no Mercado Pago.
+     *
+     * @param string $paymentId ID do pagamento no Mercado Pago.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verificarStatusPagamento($paymentId)
+    {
+        $accessToken = env('MERCADO_PAGO_ACCESS_TOKEN');
+
+        try {
+            // Faz a requisição para buscar os detalhes do pagamento
+            $response = Http::withToken($accessToken)
+                ->get("https://api.mercadopago.com/v1/payments/{$paymentId}");
+
+            if ($response->failed()) {
+                return response()->json([
+                    'error' => 'Erro ao buscar status do pagamento no Mercado Pago',
+                    'details' => $response->json()
+                ], $response->status());
+            }
+
+            // Obtém os dados da resposta
+            $paymentData = $response->json();
+
+            // Retorna o status e outras informações relevantes
+            return response()->json([
+                'status' => $paymentData['status'], // Status do pagamento (ex: approved, pending, rejected)
+                'external_reference' => $paymentData['external_reference'] ?? null, // ID da barbearia
+                'date_approved' => $paymentData['date_approved'] ?? null, // Data de aprovação
+                'payer_email' => $paymentData['payer']['email'] ?? null, // E-mail do pagador
+                'transaction_amount' => $paymentData['transaction_amount'] ?? null, // Valor do pagamento
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Erro na comunicação com o Mercado Pago',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }
