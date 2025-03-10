@@ -9,6 +9,7 @@ class scheduleRepository{
     public function getSchedule(){
         $result = DB::select("
                                     SELECT
+                                        c.cliente_id AS cliente_id,
                                         c.nome AS cliente,
                                         c.telefone AS telefone,
                                         TO_CHAR(a.data_hora, 'DD/MM/YYYY HH24:MI') AS horario,
