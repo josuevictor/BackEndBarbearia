@@ -109,10 +109,10 @@ class scheduleServiceController extends Controller
             }
 
             // Atualiza o status do agendamento para cancelado
-            DB::table('agendamentos')
+            DB::table('agendamento.agendamentos')
                 ->where('agendamento_cliente_id', $cliente_id)
                 ->where(DB::raw('DATE(data_hora)'), $dataHora)
-                ->update(['status_agendamento' => 'C']);
+                ->update(['status_agendamento' => 2]);
 
             return response()->json(['response' => 'Agendamento cancelado', 'status_code' => 200], 200);
         } catch (\Exception $e) {

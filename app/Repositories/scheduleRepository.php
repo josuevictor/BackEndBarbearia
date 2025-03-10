@@ -15,8 +15,8 @@ class scheduleRepository{
                                         s.ds_servico AS servico,
                                         f.nome AS barbeiro,
                                         CASE
-                                            WHEN a.status_agendamento = 'A' THEN 'AGENDADO'
-                                            WHEN a.status_agendamento = 'C' THEN 'CANCELADO'
+                                            WHEN a.status_agendamento = 1 THEN 'AGENDADO'
+                                            WHEN a.status_agendamento = 2 THEN 'CANCELADO'
                                             ELSE '--'
                                         END AS status
                                     FROM agendamento.agendamentos a
