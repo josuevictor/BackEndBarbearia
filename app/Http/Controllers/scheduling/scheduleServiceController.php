@@ -68,7 +68,7 @@ class scheduleServiceController extends Controller
             $agendamento->cpf                        = $cpf_cliente;
             $agendamento->data_hora                  = $dataHora;
             $agendamento->agendamento_funcionario_id = $barbeiro;
-            $agendamento->status_agendamento         = 'A';
+            $agendamento->status_agendamento         = 1;
             $agendamento->saveOrFail();
 
             DB::commit();
@@ -88,7 +88,7 @@ class scheduleServiceController extends Controller
     {
         return agendamento::where('agendamento_funcionario_id', $barbeiro)
             ->where('data_hora', $dataHora)
-            ->where('status_agendamento', 'A')
+            ->where('status_agendamento', 1)
             ->exists();
     }
 
