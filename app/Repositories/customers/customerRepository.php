@@ -53,7 +53,7 @@ class CustomerRepository
                                             f.nome AS barbeiro,
                                             CASE
                                                 WHEN a.status_agendamento = 1 THEN 'AGENDADO'
-                                                WHEN a.status_agendamento = 1 THEN 'CANCELADO'
+                                                WHEN a.status_agendamento = 2 THEN 'CANCELADO'
                                                 ELSE '--'
                                             END AS status
                                         FROM agendamento.agendamentos a
